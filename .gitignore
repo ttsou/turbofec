@@ -1,4 +1,5 @@
 *.swp
+tags
 autom4te.cache
 Makefile
 Makefile.in
