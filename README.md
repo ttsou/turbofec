@@ -26,7 +26,7 @@ LTE specification and sections:
 Compile
 =======
 ```
-$ ./autoreconf -i
+$ autoreconf -i
 $ ./configure
 $ make
 ```
