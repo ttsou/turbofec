@@ -40,15 +40,17 @@ $ make check
 A collection of GSM, LTE, and other forward error correcting codes will
 be tested.
 
+```
 =================================================
-- [x] Testing: GSM xCCH
-- [ ] Specs: (N=2, K=5, non-recursive, flushed, not punctured)
+[+] Testing: GSM xCCH
+[.] Specs: (N=2, K=5, non-recursive, flushed, not punctured)
 
-- [ ] BER test:
-- [ ] Testing:
-- [ ] Input BER.......................... 0.007508
-- [ ] Output BER......................... 0.000000
-- [ ] Output FER......................... 0.000000
+[.] BER test:
+[..] Testing:
+[..] Input BER.......................... 0.007508
+[..] Output BER......................... 0.000000
+[..] Output FER......................... 0.000000
+```
 
 Install
 =======
