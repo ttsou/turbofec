@@ -32,8 +32,16 @@ void lte_rate_matcher_free(struct lte_rate_matcher *match);
 int lte_rate_match_rv(struct lte_rate_matcher *match,
 		      struct lte_rate_matcher_io *io, int rv);
 
+/* LTE forward turbo path rate matching */
+int lte_rate_match_fw(struct lte_rate_matcher *match,
+		      struct lte_rate_matcher_io *io, int rv);
+
 /* LTE reverse convolutional path rate matching */
 int lte_conv_rate_match_rv(struct lte_rate_matcher *match,
+			   struct lte_rate_matcher_io *io);
+
+/* LTE forward convolutional path rate matching */
+int lte_conv_rate_match_fw(struct lte_rate_matcher *match,
 			   struct lte_rate_matcher_io *io);
 
 #endif /* _TURBO_RATE_MATCH_ */

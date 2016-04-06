@@ -244,10 +244,10 @@ static int deinterlv(signed char *v, int len, signed char *d, int rows)
 	return 0;
 }
 
-static int rate_match_init(struct lte_rate_matcher *match, int D, int E)
+static int rate_match_init_fw(struct lte_rate_matcher *match,
+			      signed char **d, int D, signed char *e, int E)
 {
-	int i, rows, V;
-	signed char *e;
+	int i, rows, shift, V;
 
 	if ((E < 1) || (E > MAX_E))
 		return -EINVAL;
@@ -261,7 +261,9 @@ static int rate_match_init(struct lte_rate_matcher *match, int D, int E)
 	match->V = V;
 	match->rows = rows;
 
-	e = calloc(E, sizeof(char));
+	shift = V - D;
+	if ((shift < 0) || (shift > 31))
+		return -EINVAL;
 
 	free(match->w_null);
 	match->w_null = (int *) calloc(MAX_W_NULL, sizeof(int));
@@ -270,6 +272,9 @@ static int rate_match_init(struct lte_rate_matcher *match, int D, int E)
 		free(match->z[i]);
 		match->z[i] = (signed char *) calloc(V, sizeof(char));
 
+		if (d)
+			memcpy(match->z[i], d[i], D * sizeof(char));
+
 		free(match->v[i]);
 		match->v[i] = (signed char *) malloc(V * sizeof(char));
 
@@ -277,6 +282,18 @@ static int rate_match_init(struct lte_rate_matcher *match, int D, int E)
 	}
 
 	rate_match_fw(match, e, E);
+
+	return 0;
+}
+
+static int rate_match_init_rv(struct lte_rate_matcher *match, int D, int E)
+{
+	if ((D <= 0) || (E <= 0))
+		return -1;
+
+	signed char *e = calloc(E, sizeof(char));
+
+	rate_match_init_fw(match, NULL, D, e, E);
 
 	free(e);
 
@@ -290,10 +307,10 @@ int lte_conv_rate_match_rv(struct lte_rate_matcher *match,
 	int i, shift;
 
 	if (!match || !io)
-		return -1;
+		return -EFAULT;
 
 	if ((match->E != io->E) || (match->D != io->D)) {
-		if (rate_match_init(match, io->D, io->E))
+		if (rate_match_init_rv(match, io->D, io->E))
 			return -1;
 	}
 
@@ -313,6 +330,19 @@ int lte_conv_rate_match_rv(struct lte_rate_matcher *match,
 		memcpy(io->d[i], &match->z[i][shift],
 		       match->D * sizeof(char));
 	}
+
+	return 0;
+}
+
+API_EXPORT
+int lte_conv_rate_match_fw(struct lte_rate_matcher *match,
+			   struct lte_rate_matcher_io *io)
+{
+	if (!match || !io)
+		return -EFAULT;
+
+	if (rate_match_init_fw(match, io->d, io->D, io->e, io->E))
+		return -1;
 
 	return 0;
 }

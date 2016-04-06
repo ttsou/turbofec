@@ -178,7 +178,7 @@ static int p_fcn(int i)
 static void rate_match_fw(struct lte_rate_matcher *match,
 			  signed char *e, int E, int rv)
 {
-	int i, n, val, m = 0;
+	int i, n, m = 0;
 	int V = match->V;
 	int K_w = 3 * V;
 	int w_len = 3 * V;
@@ -217,13 +217,7 @@ static void rate_match_fw(struct lte_rate_matcher *match,
 			continue;
 		}
 
-		val = (int) w[n] + (int) e[i];
-		if (val > SCHAR_MAX)
-			val = SCHAR_MAX;
-		else if (val < -SCHAR_MAX)
-			val = -SCHAR_MAX;
-
-		e[i++] = val;
+		e[i++] = w[n];
 	}
 
 	match->w_null_cnt = m;
@@ -384,11 +378,11 @@ static void deinterlv_v2(struct lte_rate_matcher *match)
 		z[pi[k]] = v[k];
 }
 
-API_EXPORT
-int rate_match_init(struct lte_rate_matcher *match, int D, int E, int rv)
+static int rate_match_init_fw(struct lte_rate_matcher *match,
+			      signed char **d, int D,
+			      signed char *e, int E, int rv)
 {
-	int i, rows, V;
-	signed char *e;
+	int i, rows, shift, V;
 
 	if ((rv < 0) || (rv > 3))
 		return -EINVAL;
@@ -403,7 +397,9 @@ int rate_match_init(struct lte_rate_matcher *match, int D, int E, int rv)
 	match->rows = rows;
 	match->rv = rv;
 
-	e = (signed char *) calloc(E, sizeof(char));
+	shift = V - D;
+	if ((shift < 0) || (shift > 31))
+		return -EINVAL;
 
 	free(match->w_null);
 	match->w_null = (int *) calloc(MAX_W_NULL, sizeof(int));
@@ -415,6 +411,9 @@ int rate_match_init(struct lte_rate_matcher *match, int D, int E, int rv)
 		free(match->z[i]);
 		match->z[i] = (signed char *) calloc(V, sizeof(char));
 
+		if (d)
+			memcpy(match->z[i], d[i], D * sizeof(char));
+
 		free(match->v[i]);
 		match->v[i] = (signed char *) malloc(V * sizeof(char));
 
@@ -425,6 +424,20 @@ int rate_match_init(struct lte_rate_matcher *match, int D, int E, int rv)
 	}
 
 	rate_match_fw(match, e, E, rv);
+
+	return 0;
+}
+
+static int rate_match_init_rv(struct lte_rate_matcher *match,
+			      int D, int E, int rv)
+{
+	if ((D <= 0) || (E <= 0))
+		return -1;
+
+	signed char *e = calloc(E, sizeof(char));
+
+	rate_match_init_fw(match, NULL, D, e, E, rv);
+
 	free(e);
 
 	return 0;
@@ -441,7 +454,7 @@ int lte_rate_match_rv(struct lte_rate_matcher *match,
 
 	/* Reinitialize the rate matcher if the IO values don't match */
 	if ((match->E != io->E) || (match->D != io->D) || (match->rv != rv)) {
-		if (rate_match_init(match, io->D, io->E, rv))
+		if (rate_match_init_rv(match, io->D, io->E, rv))
 			return -EINVAL;
 	}
 
@@ -464,6 +477,20 @@ int lte_rate_match_rv(struct lte_rate_matcher *match,
 		memcpy(io->d[i], &match->z[i][shift],
 		       match->D * sizeof(char));
 	}
+
+	return 0;
+}
+
+API_EXPORT
+int lte_rate_match_fw(struct lte_rate_matcher *match,
+		      struct lte_rate_matcher_io *io, int rv)
+{
+	if (!match || !io || (io->E < 1) || (io->E > MAX_E) || (io->D < 1))
+		return -EINVAL;
+
+	/* Reinitialize the rate matcher if the IO values don't match */
+	if (rate_match_init_fw(match, io->d, io->D, io->e, io->E, rv))
+		return -EINVAL;
 
 	return 0;
 }
