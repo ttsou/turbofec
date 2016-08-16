@@ -86,3 +86,41 @@ Install
 ```
 $ sudo make install
 ```
+
+Benchmark
+=========
+
+Various convolutional and turbo decoding tests are available.
+
+```
+$ tests/turbo_test -h
+Options:
+  -h    This text
+  -p    Number of packets (per thread)
+  -j    Number of threads for benchmark
+  -i    Number of turbo iterations
+  -a    Run all tests
+  -b    Run benchmark tests
+  -n    Run length checks
+  -r    Specify SNR in dB (default 8.0 dB)
+  -e    Run bit error rate tests
+  -c    Test specific code
+  -l    List supported codes
+```
+
+Benchmark LTE turbo codes with 8 threads, 4 iterations, and 10000 blocks per thread.
+
+```
+$ tests/turbo_test -b -j 8 -i 4 -p 10000
+
+=================================================
+[+] Testing: 3GPP LTE turbo
+[.] Specs: (N=2, K=4), Length 6144
+
+[.] Performance benchmark:
+[..] Decoding 80000 bursts on 8 thread(s) with 4 iteration(s)
+[..] Testing:
+[..] Elapsed time....................... 5.925372 secs
+[..] Rate............................... 83.043313 Mbps
+
+```
