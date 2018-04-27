@@ -20,7 +20,9 @@
  */
 
 #include <stdlib.h>
+#if !defined(__MACH__)
 #include <malloc.h>
+#endif
 #include <string.h>
 #include <errno.h>
 
@@ -94,7 +96,10 @@ struct vdecoder {
 
 static int16_t *vdec_malloc(size_t n)
 {
-#ifdef HAVE_SSE3
+#if defined(__MACH__)
+	// OSX guarentee's 16-byte alignment on the heap but lacks memalign() (Has posix_memalign though)
+	return (int16_t *) malloc(sizeof(int16_t) * n);
+#elif defined(HAVE_SSE3)
 	return (int16_t *) memalign(SSE_ALIGN, sizeof(int16_t) * n);
 #else
 	return (int16_t *) malloc(sizeof(int16_t) * n);

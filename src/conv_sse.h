@@ -32,6 +32,10 @@
 #include <immintrin.h>
 #endif
 
+#if defined(__MACH__)
+#define __always_inline inline
+#endif
+
 /*
  * Octo-Viterbi butterfly
  *
