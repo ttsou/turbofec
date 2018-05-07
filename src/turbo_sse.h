@@ -22,7 +22,9 @@
 #ifdef HAVE_SSE3
 #include <stdint.h>
 #include <math.h>
+#if !defined(__MACH__)
 #include <malloc.h>
+#endif
 #include <emmintrin.h>
 #include <tmmintrin.h>
 #include <immintrin.h>
