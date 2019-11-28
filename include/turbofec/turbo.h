@@ -1,6 +1,10 @@
 #ifndef _LTE_TURBO_
 #define _LTE_TURBO_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 struct tdecoder;
@@ -44,5 +48,9 @@ int lte_turbo_decode(struct tdecoder *dec, int len, int iter, uint8_t *output,
 int lte_turbo_decode_unpack(struct tdecoder *dec, int len, int iter,
 			    uint8_t *output, const int8_t *d0,
 			    const int8_t *d1, const int8_t *d2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _LTE_TURBO_ */
