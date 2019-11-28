@@ -1,6 +1,10 @@
 #ifndef _TURBO_RATE_MATCH_
 #define _TURBO_RATE_MATCH_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct lte_rate_matcher {
 	int E;
 	int D;
@@ -43,5 +47,9 @@ int lte_conv_rate_match_rv(struct lte_rate_matcher *match,
 /* LTE forward convolutional path rate matching */
 int lte_conv_rate_match_fw(struct lte_rate_matcher *match,
 			   struct lte_rate_matcher_io *io);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _TURBO_RATE_MATCH_ */
