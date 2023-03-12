@@ -279,7 +279,7 @@ static int encode_gen(const struct lte_conv_code *code,
 		      const uint8_t *input, uint8_t *output)
 {
 	unsigned reg = 0;
-	const unsigned *gen = gen;
+	const unsigned *gen = code->gen;
 	int n = code->n;
 	int len = code->len;
 	int i, j, k = code->k;
