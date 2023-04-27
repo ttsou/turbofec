@@ -124,3 +124,22 @@ $ tests/turbo_test -b -j 8 -i 4 -p 10000
 [..] Rate............................... 83.043313 Mbps
 
 ```
+
+# Cmake
+Create Makefile and build packages
+```
+SrcDir=~/src/turbofec
+BuildDir=/tmp/turbofec_build
+$BuildDir
+cmake -S $SrcDir -B $BuildDir
+cmake --build $BuildDir -j $(nproc) --target package
+```
+For install in /usr/local/ use:
+```
+turbofec-0.1-Linux.deb
+```
+For instali in $UsrDir run:
+```
+turbofec-0.1-Linux.sh --prefix=$UsrDir --skip-license
+```
+
