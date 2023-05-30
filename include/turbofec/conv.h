@@ -1,6 +1,10 @@
 #ifndef _CONV_H_
 #define _CONV_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 enum {
@@ -33,5 +37,9 @@ int lte_conv_encode(const struct lte_conv_code *code,
 
 int lte_conv_decode(const struct lte_conv_code *code,
 		    const int8_t *input, uint8_t *output);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _CONV_H_ */
